@@ -22,6 +22,8 @@ func main() {
   log.Fatal("marshaling error: ", err)
  }
 
+ fmt.Printf("Sizeof marshalled data: %d\n", unsafe.Sizeof(data));
+
  // Deserialize the byte slice back into a new Player message
  newPacket := &pb.Packet{}
  err = proto.Unmarshal(data, newPacket)
