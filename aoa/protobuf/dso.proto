@@ -1,0 +1,27 @@
+syntax="proto3";
+
+option go_package = "soloscuro/";
+
+package main;
+
+message Packet {
+    message Ping {
+    }
+    message Auth {
+        string Username = 1;
+        string Password = 2;
+    }
+    message Player {
+        string name = 1;
+    }
+    message Status {
+        int32 NumPlayers = 1;
+    }
+
+    oneof Op {
+        Ping Ping_Op = 1;
+        Auth Auth_Op = 2;
+        Player Player_Op = 3;
+        Status Status_Op = 4;
+    }
+}

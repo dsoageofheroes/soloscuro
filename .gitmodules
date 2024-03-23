@@ -1,0 +1,3 @@
+[submodule "libgff"]
+	path = libgff
+	url = git@github.com:dsoageofheroes/libgff.git
