@@ -1,3 +1,6 @@
 [submodule "libgff"]
 	path = libgff
 	url = git@github.com:dsoageofheroes/libgff.git
+[submodule "orx"]
+	path = orx
+	url = https://github.com/orx/orx.git

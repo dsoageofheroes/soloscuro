@@ -1,0 +1,71 @@
+syntax="proto3";
+
+option go_package = "proto/";
+
+package soloscuro;
+
+// Ping will respond with Ping.
+message Ping {
+}
+
+message Failure {
+    string msg = 1;
+}
+
+// Auth wiil respond with Token or Failure
+message Create {
+    string username = 1;
+    string password = 2;
+}
+
+// Auth wiil respond with Token or Failure
+message Auth {
+    string username = 1;
+    string password = 2;
+}
+
+message Token {
+    bytes token = 1;
+    string username = 2;
+}
+
+enum EntityType {
+    Static = 0;
+    Object = 1;
+    Player = 2;
+    Spell  = 3;
+}
+
+message Entity {
+    fixed32 id = 1;
+    string name = 2;
+    EntityType type = 3;
+    bytes data = 4;
+}
+
+// Is sent to update the client of the Player Status.
+message PlayerStatus {
+    repeated Entity player = 1;
+}
+
+// Server Statistics
+message Stats {
+    int32 NumPlayers = 1;
+}
+
+message Packet {
+    oneof Op {
+        Ping ping_op = 1;
+        Auth auth_op = 2;
+        PlayerStatus player_op = 3;
+        Stats stats_op = 4;
+        Token token_op = 5;
+        Create create_op = 6;
+        Error error_op = 7;
+    }
+}
+
+message Error {
+    string msg = 1;
+    Packet packet = 2;
+}
