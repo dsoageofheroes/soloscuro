@@ -1,2 +1,3 @@
 # Vim files
 [._]*.s[a-v][a-z]
+dso.pb-c.[a-z]

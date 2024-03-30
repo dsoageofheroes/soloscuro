@@ -14,6 +14,8 @@ static int option_selected(sol_state_t *state, int option) {
         case DS1_WINDOW_VIEW_CHARACTER:
             switch (option) {
                 case 0:
+                    sol_close_top_window(state);
+                    return sol_window_load(state, DARKSUN_1, DS1_WINDOW_NEW_CHARACTER);
                     break;
                 case 1:
                     return sol_create_popup(state, "NOT IMPLEMENTED");
@@ -47,7 +49,10 @@ extern int sol_left_button_click(sol_state_t *state, sol_button_t *button) {
     printf("Left Button Click: %d\n", button->gb.rh.id);
     switch (button->gb.rh.id) {
         case 10308: // game return
+        case 2058: // exit
         //case 10309: // message window
+             return sol_close_top_window(state);
+        case 2000:  // Done on new char
              return sol_close_top_window(state);
         case 11300: // Player 0
         case 11301: // player 1

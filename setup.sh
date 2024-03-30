@@ -4,3 +4,6 @@ cd orx
 ./setup.sh
 cd code/build/linux/gmake/
 make
+cd libgff
+make
+cd ..

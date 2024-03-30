@@ -2,7 +2,7 @@
 #include "orxNuklear.h"
 #include "gff/gfftypes.h"
 
-static int copy_text(sol_button_t *sb, const char *text) {
+extern int sol_copy_text(sol_button_t *sb, const char *text) {
     size_t len = strlen(text);
     
     // gff buttons only have 64 chars.
@@ -36,7 +36,7 @@ extern int sol_create_popup(sol_state_t *state, const char *text) {
         item = win->items + i;
         if (item->type == GFF_BUTN) {
             switch (item->item.button.gb.rh.id) {
-                case 10309: copy_text(&item->item.button, text); break;
+                case 10309: sol_copy_text(&item->item.button, text); break;
             }
         }
     }
@@ -60,10 +60,10 @@ extern int sol_create_option(sol_state_t *state, const char *title, const char *
         item = win->items + i;
         if (item->type == GFF_BUTN) {
             switch (item->item.button.gb.rh.id) {
-                case 14004: copy_text(&item->item.button, title); break;
-                case 14001: copy_text(&item->item.button, option1); break;
-                case 14002: copy_text(&item->item.button, option2); break;
-                case 14003: copy_text(&item->item.button, option3); break;
+                case 14004: sol_copy_text(&item->item.button, title); break;
+                case 14001: sol_copy_text(&item->item.button, option1); break;
+                case 14002: sol_copy_text(&item->item.button, option2); break;
+                case 14003: sol_copy_text(&item->item.button, option3); break;
             }
         }
     }

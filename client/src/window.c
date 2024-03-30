@@ -168,11 +168,11 @@ found_background:
                 break;
             case GFF_APFM:
                 //print_frame(gff, item->id);
-                //printf("APFM\n");
+                printf("APFM: %d\n", item->id);
                 break;
             case GFF_BUTN:
                 load_button(state, res, game, &win->items[i].item.button, item);
-                printf("BUTTON: %d\n", item->id);
+                printf("BUTTON: %d, text: '%s'\n", item->id, win->items[i].item.button.gb.text);
                 break;
             case GFF_EBOX:
                 //print_ebox(gff, item->id);
@@ -187,6 +187,10 @@ found_background:
 
     for (int i = 0; i < win->gwin->itemCount; i++) {
         win->items[i].item.button.len = 0;
+    }
+
+    switch(res_id) {
+        case DS1_WINDOW_NEW_CHARACTER:sol_init_new_char(state); break;
     }
 
     return status;
@@ -214,6 +218,12 @@ static int draw_button(sol_state_t *state, sol_button_t *button) {
 
     nk_layout_space_push(&sstNuklear.stContext, loc);
 
+    nk_style_set_font(&sstNuklear.stContext, &sstNuklear.apstFonts[FONT_TTF_14]->handle);
+    /*
+    button->nsb.text_active =
+    button->nsb.text_hover =
+    button->nsb.text_normal = nk_rgb(255, 0, 0);
+    */
     if (nk_button_text_styled(&sstNuklear.stContext, &button->nsb, button->gb.text, button->len)) {
         sol_left_button_click(state, button);
     }
@@ -235,6 +245,9 @@ static int draw_window(sol_state_t *state, sol_win_t *win, const char *name) {
         nk_layout_space_push(&sstNuklear.stContext, back_loc);
         nk_image(&sstNuklear.stContext, nk_image_ptr(win->background));
 
+        if (win->prev.item.button.gb.frame.initbounds.xmin) {
+            draw_button(state, &win->prev.item.button);
+        }
         // Draw all the items
         for (int i = 0; i < win->gwin->itemCount; i++) {
             switch (win->items[i].type) {
@@ -291,9 +304,16 @@ extern int sol_window_draw(sol_state_t *state) {
     char buf[1024];
     int i = 0;
 
-    for (sol_win_t *win = state->swin; win <= state->swin + WIN_MAX && win->status != WIN_FREE; win++) {
+    //for (sol_win_t *win = state->swin; win < state->swin + WIN_MAX && win->status != WIN_FREE; win++) {
+    for (sol_win_t *win = state->swin; win < state->swin + WIN_MAX; win++) {
         sprintf(buf, "%d", i++);
-        draw_window(state, win, buf);
+        if (win->status == WIN_IN_USE) {
+            draw_window(state, win, buf);
+        }
+    }
+
+    // cleanup
+    for (sol_win_t *win = state->swin; win < state->swin + WIN_MAX; win++) {
         if (win->status == WIN_TO_DELETE) {
             close_window(state, win);
         }
@@ -304,14 +324,14 @@ extern int sol_window_draw(sol_state_t *state) {
 
 extern sol_win_t* sol_window_get_top(sol_state_t *state) {
     sol_win_t *win = NULL;
-    for (win = state->swin; win < state->swin + WIN_MAX && win->status != WIN_FREE; win++) {
+    for (win = state->swin + WIN_MAX - 1; win >= state->swin && win->status == WIN_FREE; win--) {
     }
 
-    if (win >= state->swin + WIN_MAX || win == state->swin) {
+    if (win < state->swin) {
         return NULL;
     }
 
-    return (--win);
+    return (win);
 }
 
 extern int sol_close_top_window(sol_state_t *state) {

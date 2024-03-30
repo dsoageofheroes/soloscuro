@@ -3,11 +3,9 @@
 #include "gff/gfftypes.h"
 
 extern int sol_button_fixup(sol_state_t *state, gff_file_t *res, char *game, sol_button_t *sb, int b) {
-    /*
-    int i = 0;
-    for (i = 0; i < WIN_MAX && state->swin[i].in_use; i++) {
-    }
-    */
+    char buf[1024];
+    orxTEXTURE *tex = NULL;
+
     sol_win_t *swin = sol_window_get_top(state);
     if (swin == NULL) {
         swin = state->swin;
@@ -53,6 +51,38 @@ extern int sol_button_fixup(sol_state_t *state, gff_file_t *res, char *game, sol
             sb->nsb.active = nk_style_item_color((struct nk_color){237, 233, 157, 0});
             //sb->text = "";
             //sb->len = 0;
+            break;
+        case 2001:// Race on New Character
+            snprintf(buf, 1023, "%s/resource/%d.0.r0.bmp", game, 13005);
+            tex = orxTexture_Load(buf, 0);
+            sb->nsb.normal = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
+            sb->nsb.hover = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
+            sb->nsb.active = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
+            break;
+        case 2027:// Preview of New Character
+            snprintf(buf, 1023, "%s/resource/%d.0.r0.bmp", game, 20083);
+            tex = orxTexture_Load(buf, 0);
+            sb->nsb.normal = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
+            sb->nsb.hover = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
+            sb->nsb.active = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
+            break;
+        case 2010:// Dice Background
+            snprintf(buf, 1023, "%s/resource/%d.0.r0.bmp", game, 20085);
+            tex = orxTexture_Load(buf, 0);
+            sb->nsb.normal = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
+            sb->nsb.hover = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
+            sb->nsb.active = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
+            break;
+        case 2012: // STR
+        case 2013: // DEX
+        case 2014: // CON
+        case 2015: // INT
+        case 2016: // WIS
+        case 2017: // CHA
+        case 2018:// HP
+        case 2011:// Alignment
+            sb->nsb.hover = sb->nsb.active =
+            sb->nsb.normal = nk_style_item_color((struct nk_color){237, 233, 157, 0});
             break;
     }
 

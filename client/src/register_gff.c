@@ -80,7 +80,10 @@ extern int sol_register_gff_type(sol_state_t *state) {
     //int status = EXIT_FAILURE;
     if (gff_manager == NULL) {
         gff_manager = state->gman = gff_manager_create();
-        gff_manager_load_ds1(state->gman, "ds1/");
+        if (gff_manager_load_ds1(state->gman, "ds1/")) {
+            fprintf(stderr, "Unable to find gff in 'ds1' directory/folder. Please create and add files there\n");
+            exit(1);
+        }
     }
 
     orxSTATUS eResult = orxSTATUS_FAILURE;

@@ -92,8 +92,9 @@ orxSTATUS orxFASTCALL Init()
 
     orxNuklear_Init();
 
-    //sol_window_load(&state, DARKSUN_1, DS1_WINDOW_NEW_CHARACTER);
-    sol_window_load(&state, DARKSUN_1, DS1_WINDOW_VIEW_CHARACTER);
+    sol_window_load(&state, DARKSUN_1, DS1_WINDOW_NEW_CHARACTER);
+    //sol_window_load(&state, DARKSUN_1, 3013);
+    //sol_window_load(&state, DARKSUN_1, DS1_WINDOW_VIEW_CHARACTER);
     //sol_window_load(&state, DARKSUN_1, DS1_WINDOW_MESSAGE);
     //sol_window_load(&state, DARKSUN_1, DS1_WINDOW_POPUP);
     //sol_create_option(&state, "title", "A", "B", "C");

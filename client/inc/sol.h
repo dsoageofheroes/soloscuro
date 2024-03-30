@@ -36,6 +36,7 @@ typedef struct sol_win_s {
     uint32_t        x, y, counter;
     gff_window_t   *gwin;
     orxBITMAP      *background;
+    sol_win_item_t  prev;// Hack, hopefully just need once.
     sol_win_item_t *items;
 } sol_win_t;
 
@@ -55,6 +56,8 @@ extern int sol_left_button_click(sol_state_t *state, sol_button_t *button);
 extern int sol_create_option(sol_state_t *state, const char *title, const char *option1, const char *option2, const char *option3);
 extern int sol_create_popup(sol_state_t *state, const char *text);
 extern int sol_close_top_window(sol_state_t *state);
+extern int sol_copy_text(sol_button_t *sb, const char *text);
+extern int sol_init_new_char(sol_state_t *state);
 
 extern sol_win_t* sol_window_get_top(sol_state_t *state);
 extern sol_win_t* sol_window_get_below_top(sol_state_t *state);
@@ -88,6 +91,10 @@ enum sol_windows_type_e {
     DS1_WINDOW_SPELL_TRAIN = 17500,
     DS1_WINDOW_PSI_TRAIN = 17501,
     DS1_WINDOW_DUAL = 17502,
+};
+
+enum {
+    FONT_TTF_14 = 0,
 };
 
 #endif
