@@ -28,13 +28,15 @@ OBJS = $(SRCS:src/%.c=obj/%.o)
 CFLAGS = $(INCS) -Wall -Werror -g -fsanitize=address
 
 all: $(OBJS)
-	cd ../ ; protoc --c_out=client/src/ dso.proto
 	gcc $(CFLAGS) obj/*.o -L/usr/local/lib $(LIBS) -o client && LD_LIBRARY_PATH=../orx/code/lib/dynamic/:../libgff/build/src/:../libgff/build/ext/ ./client first second
+
+src/dso.pb-c.c src/dso.pb-c.h:
+	cd ../ ; protoc --c_out=client/src/ dso.proto
 
 obj:
 	mkdir -p obj
 
-obj/%.o: src/%.c inc/*.h | obj
+obj/%.o: src/%.c inc/*.h src/dso.pb-c.h | obj 
 	echo $(OBJS)
 	gcc $(CFLAGS) -c $< -o $@
 
