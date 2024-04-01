@@ -1,5 +1,5 @@
 [submodule "orx"]
-	path = orx
+	path = ext/orx
 	url = https://github.com/orx/orx.git
 [submodule "ext/libsoloscuro"]
 	path = ext/libsoloscuro
