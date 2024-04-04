@@ -6,7 +6,7 @@ static int option_selected(sol_state_t *state, int option) {
     sol_win_t* win = sol_window_get_below_top(state);
 
     if (win == NULL) {
-        printf("NO PTION!\n");
+        printf("NO OPTION!\n");
         return EXIT_FAILURE;
     }
 
@@ -71,6 +71,15 @@ extern int sol_left_button_click(sol_state_t *state, sol_button_t *button) {
         case 14002:
         case 14003:
             return option_selected(state, button->gb.rh.id - 14001);
+        case 2002:
+        case 2003:
+        case 2004:
+        case 2005:
+        case 2006:
+        case 2007:
+        case 2008:
+        case 2009:
+            return sol_new_char_click(state, button);
     }
     return EXIT_SUCCESS;
 }

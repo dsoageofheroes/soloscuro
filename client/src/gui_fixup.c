@@ -72,6 +72,9 @@ extern int sol_button_fixup(sol_state_t *state, gff_file_t *res, char *game, sol
             sb->nsb.normal = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
             sb->nsb.hover = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
             sb->nsb.active = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
+            sb->gb.frame.initbounds.xmin -= 10;
+            sb->gb.frame.width += 10;
+            sb->gb.frame.height += 10;
             break;
         case 2012: // STR
         case 2013: // DEX

@@ -1,4 +1,5 @@
 #include "sol.h"
+#include "util.h"
 #include "orxNuklear.h"
 #include "gff/gfftypes.h"
 
@@ -36,6 +37,8 @@ static int load_button(sol_state_t *state, gff_file_t *res, char *game, sol_butt
 
     tex = orxTexture_Load(buf, 0);
     if (tex) {
+        sb->nsb.active =
+        sb->nsb.hover =
         sb->nsb.normal = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
         //printf("%d %d\n", gb->frame.initbounds.xmin, gb->frame.initbounds.ymin);
     }
@@ -48,23 +51,36 @@ static int load_button(sol_state_t *state, gff_file_t *res, char *game, sol_butt
         //printf("%d %d\n", gb->frame.initbounds.xmin, gb->frame.initbounds.ymin);
     }
 
-    snprintf(buf, 1023, "%s/resource/%d.3.r0.icon", game, gb->icon_id);
+    snprintf(buf, 1023, "%s/resource/%d.2.r0.icon", game, gb->icon_id);
+    /*
     if (sol_res_exists(buf) == EXIT_FAILURE) {
         snprintf(buf, 1023, "%s/resource/%d.2.r0.icon", game, gb->icon_id);
-        if (sol_res_exists(buf) == EXIT_FAILURE) {
-            snprintf(buf, 1023, "%s/resource/%d.1.r0.icon", game, gb->icon_id);
-        }
+        //if (sol_res_exists(buf) == EXIT_FAILURE) {
+            //snprintf(buf, 1023, "%s/resource/%d.1.r0.icon", game, gb->icon_id);
+        //}
     }
+    */
     tex = orxTexture_Load(buf, 0);
     if (tex) {
         sb->nsb.active = nk_style_item_image(nk_image_ptr(orxTexture_GetBitmap(tex)));
     }
-    
+
     goto finished;
 no_image:
 
 finished:
     return sol_button_fixup(state, res, game, sb, item->id);
+}
+
+static int load_ebox(sol_state_t *state, gff_file_t *res, char *game, sol_ebox_t *eb, gff_gui_item_t *item) {
+    gff_ebox_t *ge = &eb->ge;
+
+    gff_read_ebox(res, item->id, ge);
+
+    ge->frame.initbounds = item->init_bounds;
+    //uint16_t  max_lines, styles, runs, size, user_id;
+    printf("%d %d %d %d %d\n", ge->max_lines, ge->styles, ge->runs, ge->size, ge->user_id);
+    return EXIT_SUCCESS;
 }
 
 extern int sol_window_load(sol_state_t *state, gff_game_type_t gt, int32_t res_id) {
@@ -176,7 +192,8 @@ found_background:
                 break;
             case GFF_EBOX:
                 //print_ebox(gff, item->id);
-                //printf("EBOX\n");
+                load_ebox(state, res, game, &win->items[i].item.ebox, item);
+                printf("EBOX: %d\n", item->id);
                 break;
             default:
                 printf("UNKNOWN TYPE IN WINDOW: %d\n", item->type);
@@ -200,15 +217,15 @@ unsupported_game:
 
 static float scale = 2.0;
 
-static struct nk_rect sol_nk_rect(float x, float y, float w, float h) {
+extern struct nk_rect sol_nk_rect(float x, float y, float w, float h) {
     return nk_rect(x * scale, y * scale, w * scale, h * scale);
 }
 
 extern float sol_scale_down(float value) { return value / scale; }
 
-static int draw_button(sol_state_t *state, sol_button_t *button) {
+static int draw_button(sol_state_t *state, sol_win_t *win, sol_button_t *button) {
     struct nk_rect loc = 
-            sol_nk_rect(button->gb.frame.initbounds.xmin, button->gb.frame.initbounds.ymin, button->gb.frame.width, button->gb.frame.height);
+            sol_nk_rect(win->backx + button->gb.frame.initbounds.xmin, win->backy + button->gb.frame.initbounds.ymin, button->gb.frame.width, button->gb.frame.height);
 
     if (nk_input_is_mouse_pressed(&sstNuklear.stContext.input, NK_BUTTON_RIGHT)) {
         if (nk_input_is_mouse_hovering_rect(&sstNuklear.stContext.input, loc)) {
@@ -231,64 +248,71 @@ static int draw_button(sol_state_t *state, sol_button_t *button) {
     return EXIT_SUCCESS;
 }
 
+extern int sol_draw_window_components(sol_state_t *state, sol_win_t *win) {
+    struct nk_rect back_loc = sol_nk_rect(win->backx, win->backy, win->gwin->frame.width, win->gwin->frame.height);
+    // Push the background
+    nk_layout_space_push(&sstNuklear.stContext, back_loc);
+    nk_image(&sstNuklear.stContext, nk_image_ptr(win->background));
+
+    if (win->prev.item.button.gb.frame.initbounds.xmin) {
+        draw_button(state, win, &win->prev.item.button);
+    }
+    // Draw all the items
+    for (int i = 0; i < win->gwin->itemCount; i++) {
+        switch (win->items[i].type) {
+            case GFF_BUTN:
+                draw_button(state, win, &win->items[i].item.button);
+                //if (nk_button_label(&sstNuklear.stContext, "button"))
+        }
+    }
+    //sstNuklear.stContext.style.window.fixed_background = nk_style_item_image(nk_image_ptr(bmp));
+    /*
+    enum {EASY, HARD};
+    static orxS32 Op = EASY;
+    static orxS32 Property = 20;
+
+    sstNuklear.stContext.style.window.fixed_background;
+    //orxBITMAP *pstBitmap = orxTexture_GetBitmap(sstNuklear.astSkins[sstNuklear.s32SkinCount].pstTexture);
+    //sstNuklear.astSkins[sstNuklear.s32SkinCount].stImage = nk_image_ptr(pstBitmap);
+
+    nk_layout_space_begin(&sstNuklear.stContext, NK_STATIC, 150, 150);
+    nk_layout_space_push(&sstNuklear.stContext, nk_rect(0, 0, 50, 50));
+    //nk_layout_row_static(&sstNuklear.stContext, 30, 80, 1);
+    if (nk_button_label(&sstNuklear.stContext, "button"))
+    {
+    orxLOG("Nuklear button pressed.");
+    }
+    //nk_layout_row_dynamic(&sstNuklear.stContext, 30, 2);
+    nk_layout_space_push(&sstNuklear.stContext, nk_rect(0, 0, 50, 50));
+    if(nk_option_label(&sstNuklear.stContext, "easy", Op == EASY))
+    {
+        Op = EASY;
+    }
+    */
+    /*
+    if(nk_option_label(&sstNuklear.stContext, "hard", Op == HARD))
+    {
+        Op = HARD;
+    }
+    //nk_layout_row_dynamic(&sstNuklear.stContext, 25, 1);
+    nk_property_int(&sstNuklear.stContext, "Compression:", 0, &Property, 100, 10, 1);
+    nk_edit_string_zero_terminated(&sstNuklear.stContext, NK_EDIT_FIELD, username, sizeof(username) - 1, nk_filter_default);
+    */
+    return EXIT_SUCCESS;
+}
+
 static int draw_window(sol_state_t *state, sol_win_t *win, const char *name) {
     //printf("window '%s': %d, %d\n", name, win->gwin->frame.width, win->gwin->frame.height);
     struct nk_rect win_loc = sol_nk_rect(win->x, win->y, win->gwin->frame.width, win->gwin->frame.height);
-    struct nk_rect back_loc = sol_nk_rect(0, 0, win->gwin->frame.width, win->gwin->frame.height);
 
     if(nk_begin(&sstNuklear.stContext, name, win_loc, NK_WINDOW_MOVABLE | NK_WINDOW_NO_SCROLLBAR ))
     {
         sstNuklear.stContext.style.window.fixed_background = nk_style_item_color(nk_rgba(0,0,0,0));
         nk_layout_space_begin(&sstNuklear.stContext, NK_STATIC, scale * win->gwin->frame.width, scale * win->gwin->frame.height);
-
-        // Push the background
-        nk_layout_space_push(&sstNuklear.stContext, back_loc);
-        nk_image(&sstNuklear.stContext, nk_image_ptr(win->background));
-
-        if (win->prev.item.button.gb.frame.initbounds.xmin) {
-            draw_button(state, &win->prev.item.button);
-        }
-        // Draw all the items
-        for (int i = 0; i < win->gwin->itemCount; i++) {
-            switch (win->items[i].type) {
-                case GFF_BUTN:
-                    draw_button(state, &win->items[i].item.button);
-                    //if (nk_button_label(&sstNuklear.stContext, "button"))
-            }
-        }
-        //sstNuklear.stContext.style.window.fixed_background = nk_style_item_image(nk_image_ptr(bmp));
-        /*
-        enum {EASY, HARD};
-        static orxS32 Op = EASY;
-        static orxS32 Property = 20;
-
-        sstNuklear.stContext.style.window.fixed_background;
-        //orxBITMAP *pstBitmap = orxTexture_GetBitmap(sstNuklear.astSkins[sstNuklear.s32SkinCount].pstTexture);
-        //sstNuklear.astSkins[sstNuklear.s32SkinCount].stImage = nk_image_ptr(pstBitmap);
-
-        nk_layout_space_begin(&sstNuklear.stContext, NK_STATIC, 150, 150);
-        nk_layout_space_push(&sstNuklear.stContext, nk_rect(0, 0, 50, 50));
-        //nk_layout_row_static(&sstNuklear.stContext, 30, 80, 1);
-        if (nk_button_label(&sstNuklear.stContext, "button"))
-        {
-            orxLOG("Nuklear button pressed.");
-        }
-        //nk_layout_row_dynamic(&sstNuklear.stContext, 30, 2);
-        nk_layout_space_push(&sstNuklear.stContext, nk_rect(0, 0, 50, 50));
-        if(nk_option_label(&sstNuklear.stContext, "easy", Op == EASY))
-        {
-            Op = EASY;
-        }
-        */
-        /*
-        if(nk_option_label(&sstNuklear.stContext, "hard", Op == HARD))
-        {
-            Op = HARD;
-        }
-        //nk_layout_row_dynamic(&sstNuklear.stContext, 25, 1);
-        nk_property_int(&sstNuklear.stContext, "Compression:", 0, &Property, 100, 10, 1);
-        nk_edit_string_zero_terminated(&sstNuklear.stContext, NK_EDIT_FIELD, username, sizeof(username) - 1, nk_filter_default);
-        */
+        sol_draw_window_components(state, win);
+    }
+    switch (win->gwin->rh.id) {
+        case DS1_WINDOW_NEW_CHARACTER: sol_new_char_draw(state); break;
     }
     nk_end(&sstNuklear.stContext);
 
@@ -320,6 +344,34 @@ extern int sol_window_draw(sol_state_t *state) {
     }
 
     return EXIT_SUCCESS;
+}
+
+extern sol_win_t* sol_window_take_top(sol_state_t *state) {
+    sol_win_t *win = sol_window_get_top(state), *ret = NULL;
+
+    if (!win) {
+        return NULL;
+    }
+
+    ret = malloc(sizeof(sol_win_t));
+    memcpy(ret, win, sizeof(sol_win_t));
+    win->status = WIN_FREE;
+
+    return (ret);
+}
+
+extern sol_win_t* sol_window_give_top(sol_state_t *state, sol_win_t *src) {
+    sol_win_t *win = sol_window_get_top(state);
+
+    if (!win) {
+        return NULL;
+    }
+
+    memcpy(win, src, sizeof(sol_win_t));
+
+    free(src);
+
+    return (win);
 }
 
 extern sol_win_t* sol_window_get_top(sol_state_t *state) {

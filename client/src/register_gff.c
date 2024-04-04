@@ -82,7 +82,7 @@ extern int sol_register_gff_type(sol_state_t *state) {
         gff_manager = state->gman = gff_manager_create();
         if (gff_manager_load_ds1(state->gman, "ds1/")) {
             fprintf(stderr, "Unable to find gff in 'ds1' directory/folder. Please create and add files there\n");
-            exit(1);
+            orxNuklear_Exit();
         }
     }
 
@@ -490,8 +490,8 @@ static const orxSTRING orxFASTCALL soloscuro_gff_locate(const orxSTRING group, c
     return name;
 
 entry_dne:
-    //printf("%s Does NOT exist!\n", name);
 not_a_gff_entry:
+    //printf("%s Does NOT exist!\n", name);
     return orxNULL;
 }
 

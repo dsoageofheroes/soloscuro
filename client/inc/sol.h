@@ -18,10 +18,16 @@ typedef struct sol_button_s {
     size_t len;
 } sol_button_t;
 
+typedef struct sol_ebox_s {
+    gff_ebox_t ge;
+    size_t len;
+} sol_ebox_t;
+
 typedef struct sol_win_item_s {
     uint32_t type;
     union {
         sol_button_t button;
+        sol_ebox_t ebox;
     } item;
 } sol_win_item_t;
 
@@ -34,6 +40,7 @@ enum {
 typedef struct sol_win_s {
     uint8_t         status;
     uint32_t        x, y, counter;
+    uint32_t        backx, backy;
     gff_window_t   *gwin;
     orxBITMAP      *background;
     sol_win_item_t  prev;// Hack, hopefully just need once.
@@ -58,6 +65,12 @@ extern int sol_create_popup(sol_state_t *state, const char *text);
 extern int sol_close_top_window(sol_state_t *state);
 extern int sol_copy_text(sol_button_t *sb, const char *text);
 extern int sol_init_new_char(sol_state_t *state);
+extern int sol_new_char_draw(sol_state_t *state);
+extern sol_win_t* sol_window_take_top(sol_state_t *state);
+extern sol_win_t* sol_window_give_top(sol_state_t *state, sol_win_t *src);
+extern struct nk_rect sol_nk_rect(float x, float y, float w, float h);
+extern int sol_draw_window_components(sol_state_t *state, sol_win_t *win);
+extern int sol_new_char_click(sol_state_t *state, sol_button_t *button);
 
 extern sol_win_t* sol_window_get_top(sol_state_t *state);
 extern sol_win_t* sol_window_get_below_top(sol_state_t *state);
