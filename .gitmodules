@@ -1,0 +1,6 @@
+[submodule "ext/libsoloscuro"]
+	path = ext/libsoloscuro
+	url = git@github.com:dsoageofheroes/libsoloscuro.git
+[submodule "ext/zorx"]
+	path = ext/zorx
+	url = git@github.com:PauloftheWest/zorx.git
