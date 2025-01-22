@@ -4,3 +4,6 @@
 [submodule "ext/zorx"]
 	path = ext/zorx
 	url = git@github.com:PauloftheWest/zorx.git
+[submodule "ext/lua"]
+	path = ext/lua
+	url = https://github.com/lua/lua.git
