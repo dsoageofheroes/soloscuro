@@ -1,13 +1,16 @@
 .{
     .name = "client",
     .version = "0.1.0",
-    .dependencies = .{
-        .libsoloscuro = .{
-            .path = "../ext/libsoloscuro",
-        },
-        .zorx = .{
-            .path = "../ext/zorx",
-        }
-    },
+    .dependencies = .{ .libsoloscuro = .{
+        .path = "../ext/libsoloscuro",
+    }, .zorx = .{
+        .path = "../ext/zorx",
+    }, .sol_server = .{
+        .path = "../server/",
+    }, .gff = .{
+        .path = "../ext/libsoloscuro/ext/libgff",
+    }, .protobuf = .{
+        .path = "../../../repos/zig-protobuf",
+    } },
     .paths = .{""},
 }
