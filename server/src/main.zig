@@ -27,16 +27,12 @@ pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
 
-    try sol.lua.init();
     if (sol.lib.sol_init() > 0) {
         std.debug.print("Unable initialize libsoloscuro!\n", .{});
         return;
     }
 
-    if (std.os.argv.len > 1) {
-        const len = std.mem.len(std.os.argv[1]);
-        try file_execute(std.os.argv[1][0..len]);
-    }
+    //try sol.lua.init();
 
     const cmd_thread = try std.Thread.spawn(.{}, sol.cmd.process_cmd_thread, .{});
     const network_thread = try std.Thread.spawn(.{}, process_network_thread, .{allocator});
